@@ -11,9 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Symptoms"></activity>
-        <activity android:name=".ForgetPassword" />
-        <activity android:name=".PhoneActivity" />
+        <activity android:name=".PhoneActivity"></activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginRegistration" />
         <activity android:name=".LoginActivity" />

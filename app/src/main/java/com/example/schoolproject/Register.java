@@ -1,29 +1,66 @@
 package com.example.schoolproject;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.regex.Pattern;
 
 public class Register extends AppCompatActivity {
+
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" +      //at least 1 digit
+                    "(?=.*[a-z])" +      //at least one lower case letter
+                    "(?=.*[A-Z])" +      //at least one upper case letter
+                    "(?=.*[@#$%^&+=])" +  //at least one special character
+                    "(?=\\S+$)" +         //no white space
+                    "{6,}" +              //at least 6 characters
+                    "$");
+    private static final Pattern EMAIL_ADDRESS =
+            Pattern.compile(
+                    "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                            "\\." +
+                            "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                     ")+"
+            );
+
+
+
+    //variables
     Button nextBtn;
     EditText mEmail;
     EditText mTextFirstName;
     TextView mTitleText;
     EditText mTextLastName;
+    DatabaseReference reference;
     FirebaseAuth fAuth;
+    ProgressDialog loadingBar;
     EditText mTextPassword;
     EditText mTextCnfPassword;
     ImageView backBtn;
@@ -42,32 +79,88 @@ public class Register extends AppCompatActivity {
         mTextCnfPassword = findViewById(R.id.txt_cnf_password);
         backBtn = findViewById(R.id.back_arrow);
 
+        loadingBar = new ProgressDialog(this);
+
         fAuth = FirebaseAuth.getInstance();
+
+        if (fAuth.getCurrentUser() != null){
+            startActivity(new Intent(getApplicationContext(),SignUpActivity.class));
+            finish();
+        }
+
 
         nextBtn.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view){
                 String email = mEmail.getText().toString().trim();
                 String password = mTextPassword.getText().toString().trim();
+                String CnfPassword = mTextCnfPassword.getText().toString().trim();
 
-                if(TextUtils.isEmpty(email)){
+                if (TextUtils.isEmpty( email )) {
 
-                    mEmail.setError("Email required");
-                    return;
+                    Toast.makeText( Register.this, "Email is required", Toast.LENGTH_SHORT ).show();
                 }
-                if(TextUtils.isEmpty(password)){
+                else if (!Patterns.EMAIL_ADDRESS.matcher( email ).matches()) {
 
-                    mTextPassword.setError("password is required");
-                    return;
+                    Toast.makeText( Register.this, "Please Enter a Valid Email", Toast.LENGTH_SHORT ).show();
                 }
+                else if (TextUtils.isEmpty( password )) {
 
-                if(password.length() < 4){
-
-                    mTextPassword.setError("minimum should be 8 characters");
-                    return;
+                    Toast.makeText( Register.this, "Password is Required", Toast.LENGTH_SHORT ).show();
                 }
+                else if (!PASSWORD_PATTERN.matcher( password ).matches()) {
 
+                    Toast.makeText( Register.this, "Password is too week", Toast.LENGTH_SHORT ).show();
+                }
+                else if (password.length() < 6) {
+
+                    Toast.makeText( Register.this, "Minimum should be 6 characters", Toast.LENGTH_SHORT ).show();
+
+                }
+                else if (TextUtils.isEmpty(CnfPassword)) {
+
+                    Toast.makeText( Register.this, "Confirmation Password is required", Toast.LENGTH_SHORT ).show();
+                }
+                else if (!password.equals(CnfPassword)) {
+
+                    Toast.makeText( Register.this, "Password do not match", Toast.LENGTH_SHORT ).show();
+                }
+                else {
+
+                    loadingBar.setTitle("Creating New Account");
+                    loadingBar.setMessage("Please wait, while we are creating you a New Account");
+                    loadingBar.show();
+                    loadingBar.setCanceledOnTouchOutside(false);
                 //registering the user using firebase
+
+                fAuth.createUserWithEmailAndPassword( email, password ).addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task){
+
+                        if (task.isSuccessful()) {
+
+                            Toast.makeText( Register.this, "Successfully Registered", Toast.LENGTH_SHORT ).show();
+                            loadingBar.dismiss();
+                            startActivity( new Intent( getApplicationContext(), SignUpActivity.class ) );
+                            finish();
+
+
+                        } else {
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                Toast.makeText( Register.this, "You are already Registered", Toast.LENGTH_SHORT ).show();
+                            } else {
+                                Toast.makeText( Register.this, " " + task.getException().getMessage(), Toast.LENGTH_SHORT ).show();
+                            }
+
+
+                            Toast.makeText( Register.this, "Registration Error " + task.getException().getMessage(), Toast.LENGTH_SHORT ).show();
+                            loadingBar.dismiss();
+                        }
+
+                    }
+                } );
+
+            }
 
             }
         } );

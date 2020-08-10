@@ -1,5 +1,6 @@
 package com.example.schoolproject;
 
+import androidx.annotation.MainThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;

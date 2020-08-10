@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
+            android:onClick="goBack"
             android:src="@drawable/ic_baseline_arrow_back_24"
             android:layout_marginTop="20dp"
             android:transitionName="transition_back_arrow_btn"/>
@@ -57,22 +58,24 @@
                 android:layout_gravity="center">
                 
                 <RadioButton
+                    android:id="@+id/male"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="Male"/>
 
                 <RadioButton
+                    android:id="@+id/female"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="Female"/>
 
                 <RadioButton
+                    android:id="@+id/other"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-
                     android:text="Other"/>
 
             </RadioGroup>

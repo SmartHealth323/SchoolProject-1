@@ -6,4 +6,6 @@
     <string name="next">Next</string>
     <string name="enter_phone_number">Enter Phone Number</string>
     <string name="sign_up">Sign Up</string>
+    <string name="by_signing_up_you_agree_n_to_our_terms_and_conditions">By Signing Up you agree \n to our terms and conditions</string>
+    <string name="_0712345678">0712345678</string>
 </resources>

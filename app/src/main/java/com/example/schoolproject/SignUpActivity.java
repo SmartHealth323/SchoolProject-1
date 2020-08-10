@@ -14,12 +14,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+
 public class SignUpActivity extends AppCompatActivity {
 
     Button nextBtn;
     TextView mTitleText;
+    FirebaseAuth auth;
+    DatabaseReference reference;
     ImageView backBtn;
-    RadioButton Male, Female;
+    RadioButton Male, Female, Other;
     DatePicker date;
 
 
@@ -33,12 +38,16 @@ public class SignUpActivity extends AppCompatActivity {
        nextBtn = findViewById(R.id.next_register);
        mTitleText = findViewById(R.id.title_text);
        backBtn = findViewById(R.id.back_arrow);
+       Male = findViewById(R.id.male);
+       Female = findViewById(R.id.female) ;
+       Other  = findViewById(R.id.other);
+
     }
 
 
     public void callNextRegister(View view) {
 
-        Intent intent = new Intent(getApplicationContext(),SignUpActivity.class);
+        Intent intent = new Intent(getApplicationContext(),PhoneActivity.class);
 
         //adding transitions
         Pair[] pairs = new Pair[3];
@@ -55,5 +64,10 @@ public class SignUpActivity extends AppCompatActivity {
 
             startActivity( intent );
         }
+    }
+
+    public void goBack(View view){
+        Intent goBack = new Intent(SignUpActivity.this, Register.class);
+        startActivity(goBack);
     }
 }
